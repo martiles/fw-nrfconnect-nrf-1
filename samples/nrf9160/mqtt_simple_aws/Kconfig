@@ -1,0 +1,60 @@
+#
+# Copyright (c) 2018 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
+#
+
+menu "MQTT simple sample"
+config MQTT_PUB_TOPIC
+	string "MQTT publish topic"
+	default "my/publish/topic"
+
+config MQTT_SUB_TOPIC
+	string "MQTT subscribe topic"
+	default "my/subscribe/topic"
+
+config MQTT_CLIENT_ID
+	string "Client ID"
+	default "my-client-id"
+
+config MQTT_BROKER_HOSTNAME
+	string "AWS IoT MQTT broker hostname"
+	default "your_aws_mqtt_broker_hostname.amazonaws.com"
+
+config MQTT_BROKER_PORT
+	int "AWS IoT MQTT broker port"
+	default 8883
+
+config MQTT_MESSAGE_BUFFER_SIZE
+	int "MQTT message buffer size"
+	default 128
+
+config MQTT_PAYLOAD_BUFFER_SIZE
+	int "MQTT payload buffer size"
+	default 128
+
+config CLOUD_CERT_SEC_TAG
+	int "Security tag for TLS credentials"
+	default 12345678
+
+config PROVISION_CERTIFICATES
+	bool "Provision certificates from the certificates.h file"
+	select MODEM_KEY_MGMT
+	default n
+	help
+	  If enabled, the sample provisions server certificates into
+	  the modem by storing the certificates defined in the
+	  certificates.h file in the modem under the given security tag.
+	  Use this option only once to provision the device.
+	  The certificates are stored in the application binary and are
+	  therefore shown in the modem trace information. This is a
+	  security risk. After provisioning the certificates, turn off
+	  this option and compile and program the sample again.
+	  Also, do not share the binary that includes the compiled
+	  certificates with anyone.
+
+endmenu
+
+menu "Zephyr Kernel"
+source "$ZEPHYR_BASE/Kconfig.zephyr"
+endmenu
