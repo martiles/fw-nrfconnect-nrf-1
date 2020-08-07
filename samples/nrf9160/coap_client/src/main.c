@@ -16,7 +16,7 @@
 #include <lwm2m_carrier.h>
 #endif
 
-#define APP_COAP_SEND_INTERVAL_MS 5000
+#define APP_COAP_SEND_INTERVAL_MS 900000  //sending and recieving each 15 min (900000)
 #define APP_COAP_MAX_MSG_LEN 1280
 #define APP_COAP_VERSION 1
 
@@ -48,7 +48,7 @@ static int server_resolve(void)
 	};
 	char ipv4_addr[NET_IPV4_ADDR_LEN];
 
-	err = getaddrinfo(CONFIG_COAP_SERVER_HOSTNAME, NULL, &hints, &result);
+	err = getaddrinfo("104.196.15.150", NULL, &hints, &result);
 	if (err != 0) {
 		printk("ERROR: getaddrinfo failed %d\n", err);
 		return -EIO;
@@ -210,6 +210,7 @@ void lwm2m_carrier_event_handler(const lwm2m_carrier_event_t *event)
  */
 static void modem_configure(void)
 {
+	int err;
 #if defined(CONFIG_LTE_LINK_CONTROL)
 	if (IS_ENABLED(CONFIG_LTE_AUTO_INIT_AND_CONNECT)) {
 		/* Do nothing, modem is already turned on
@@ -224,7 +225,22 @@ static void modem_configure(void)
 		k_sem_take(&carrier_registered, K_FOREVER);
 		printk("Registered!\n");
 #else /* defined(CONFIG_LWM2M_CARRIER) */
-		int err;
+#if defined(CONFIG_POWER_SAVING_MODE_ENABLE)
+		/* Requesting PSM before connecting allows the modem to inform
+		 * the network about our wish for certain PSM configuration
+		 * already in the connection procedure instead of in a separate
+		 * request after the connection is in place, which may be
+		 * rejected in some networks.
+		 */
+		err = lte_lc_psm_req(true);
+		if (err) {
+			printk("Failed to set PSM parameters, error: %d",
+				err);
+		}
+
+		printk("PSM mode requested");
+#endif
+		
 
 		printk("LTE Link Connecting ...\n");
 		err = lte_lc_init_and_connect();
@@ -232,6 +248,7 @@ static void modem_configure(void)
 		printk("LTE Link Connected!\n");
 #endif /* defined(CONFIG_LWM2M_CARRIER) */
 	}
+	
 #endif /* defined(CONFIG_LTE_LINK_CONTROL) */
 }
 

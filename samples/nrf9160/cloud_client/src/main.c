@@ -56,9 +56,10 @@ void cloud_event_handler(const struct cloud_backend *const backend,
 		LOG_INF("CLOUD_EVT_CONNECTED");
 		break;
 	case CLOUD_EVT_READY:
-		LOG_INF("CLOUD_EVT_READY");
+		LOG_INF("CLOUD_EVT_READY");		
 #if defined(CONFIG_CLOUD_PUBLICATION_SEQUENTIAL)
 		k_delayed_work_submit(&cloud_update_work, K_NO_WAIT);
+		cloud_disconnect(cloud_backend);
 #endif
 		break;
 	case CLOUD_EVT_DISCONNECTED:
@@ -73,8 +74,7 @@ void cloud_event_handler(const struct cloud_backend *const backend,
 	case CLOUD_EVT_DATA_RECEIVED:
 		LOG_INF("CLOUD_EVT_DATA_RECEIVED");
 		LOG_INF("Data received from cloud: %s",
-			log_strdup(evt->data.msg.buf))
-	;
+			log_strdup(evt->data.msg.buf));
 		break;
 	case CLOUD_EVT_PAIR_REQUEST:
 		LOG_INF("CLOUD_EVT_PAIR_REQUEST");

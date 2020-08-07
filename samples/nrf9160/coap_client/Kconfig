@@ -18,6 +18,9 @@ config COAP_SERVER_PORT
 	int "CoAP server port"
 	default 5683
 
+config POWER_SAVING_MODE_ENABLE
+	bool "Request PSM from cellular network"
+	
 endmenu
 
 menu "Zephyr Kernel"

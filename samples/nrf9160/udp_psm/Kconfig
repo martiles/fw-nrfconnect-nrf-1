@@ -1,0 +1,25 @@
+#
+# Copyright (c) 2020 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
+#
+
+menu "UDP_PSM Sample Settings"
+
+
+config POWER_SAVING_MODE_ENABLE
+	bool "Request PSM from cellular network"
+
+
+config EDRX_INTERVAL_ENABLE
+	bool "Request eDRX interval from cellular network"
+
+endmenu
+
+module = UDP_PSM
+module-str = Udp_psm Sample
+source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
+
+menu "Zephyr Kernel"
+source "Kconfig.zephyr"
+endmenu
